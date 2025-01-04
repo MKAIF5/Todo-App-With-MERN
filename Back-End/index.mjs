@@ -1,25 +1,27 @@
-import express from 'express'
+import express from 'express';
+import cors from 'cors';
 
-const app = express()
-const port = 3000
+const app = express();
+const port = process.env.PORT || 3000;
 
 const todos = [];
 
-app.use(express.json())
+app.use(express.json());
+app.use(cors({origin: ["http://localhost:5173"]}));
 
 // Todo Get
-app.get('/all-todo', (request, response) => {
+app.get('/api/v1/todos', (request, response) => {
 
-    const message = !todos.length ? "Todos Is Empty" : "This Is All Todos"
+    const message = !todos.length ? "Todos Is Empty" : "This Is All Todos";
 
     response.send({
         data: todos,
         message: message
-    })
+    });
 });
 
 // Todo Add
-app.post('/add-todo', (request, response) => {
+app.post('/api/v1/todo', (request, response) => {
 
     const obj = {
         todoContent: request.body.todoContent,
@@ -34,7 +36,7 @@ app.post('/add-todo', (request, response) => {
 })
 
 // Todo Edit
-app.patch('/edit-todo/:id', (request, response) => {
+app.patch('/api/v1/todo/:id', (request, response) => {
 
     const id = request.params.id;
 
@@ -62,7 +64,7 @@ app.patch('/edit-todo/:id', (request, response) => {
 });
 
 // Todo Delete
-app.delete('/delete-todo/:id', (request, response) => {
+app.delete('/api/v1/todos/:id', (request, response) => {
 
     const id = request.params.id;
 
