@@ -64,7 +64,7 @@ app.patch('/api/v1/todo/:id', (request, response) => {
 });
 
 // Todo Delete
-app.delete('/api/v1/todos/:id', (request, response) => {
+app.delete('/api/v1/todo/:id', (request, response) => {
 
     const id = request.params.id;
 

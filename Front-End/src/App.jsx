@@ -40,14 +40,31 @@ function App() {
       );
       todoGet();
 
+      event.target.reset();
+
     } catch (error) {
       console.log(error);
 
     }
   }
 
+  const todoDelete = async (todoId) => {
+    console.log("todoId", todoId);
 
-  // This Is For Animation Functionality
+    try {
+      const {data} = await axios.delete(`${BASE_URL}/api/v1/todo/${todoId}`);
+
+      console.log('data', data);
+
+      todoGet();
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+
+
+  // Animation Functionality
   const containerVariants = {
     hidden: { opacity: 0, y: -50 },
     visible: {
@@ -98,6 +115,7 @@ function App() {
             {todos?.map((todo) => (
 
               <motion.li
+                key={todo.id}
                 className="flex justify-between items-center p-2 rounded-md bg-gray-200 hover:bg-gray-300 transition-all"
                 variants={itemVariants}
                 initial="hidden"
@@ -108,7 +126,9 @@ function App() {
                   <button className="text-yellow-500 hover:text-yellow-400">
                     <FaPen className="h-5 w-5" />
                   </button>
-                  <button className="text-red-500 hover:text-red-400">
+                  <button
+                    onClick={() => todoDelete(todo.id)}
+                    className="text-red-500 hover:text-red-400">
                     <FaTrashAlt className="h-5 w-5" />
                   </button>
                 </div>
