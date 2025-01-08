@@ -3,8 +3,8 @@ import { motion } from 'framer-motion';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
 import axios from 'axios';
-import './App.css';
 import { useEffect, useState } from 'react';
+import './App.css';
 
 function App() {
 
@@ -17,7 +17,7 @@ function App() {
 
     const response = await axios(`${BASE_URL}/api/v1/todos`);
     const todosData = response?.data?.data;
-    // console.log(todosData);
+    console.log(todosData);
 
     setTodos(todosData);
   };
@@ -30,16 +30,18 @@ function App() {
 
     try {
       event.preventDefault();
-      
-      const todoValue = event.target.children[0].value
+
+      const todoValue = event.target.children[0].value;
 
       await axios.post(`${BASE_URL}/api/v1/todo`,
         {
-          "todo": todoValue
+          "todoContent": todoValue
         }
       );
+      todoGet();
 
     } catch (error) {
+      console.log(error);
 
     }
   }
