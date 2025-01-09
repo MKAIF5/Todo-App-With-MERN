@@ -1,37 +1,50 @@
+import { useEffect, useState } from 'react';
 import { FaTrashAlt, FaPen } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import Footer from './components/Footer';
-import Navbar from './components/Navbar';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import './App.css';
 
 function App() {
 
   // Todo Functionality
-  const BASE_URL = "http://localhost:3000"
+  const BASE_URL = "http://localhost:3000";
 
   const [todos, setTodos] = useState([]);
+  const [isEditing, setIsEditing] = useState();
+  console.log(todos);
 
+  // Todo Get Work 
   const todoGet = async () => {
 
     const response = await axios(`${BASE_URL}/api/v1/todos`);
     const todosData = response?.data?.data;
     console.log(todosData);
 
-    setTodos(todosData);
+    const editAdd = todosData.map((todo) => {
+      return { ...todo, isEditing: false };
+    });
+
+    setTodos(editAdd);
   };
 
   useEffect(() => {
     todoGet();
   }, []);
 
+  // Todo Add Work 
   const todoAdd = async (event) => {
 
     try {
       event.preventDefault();
 
       const todoValue = event.target.children[0].value;
+      if (todoValue === "") {
+        toast.error("plzz Enter A Value");
+        return;
+      }
 
       await axios.post(`${BASE_URL}/api/v1/todo`,
         {
@@ -47,14 +60,15 @@ function App() {
 
     }
   }
-
+  // Todo Delete Work 
   const todoDelete = async (todoId) => {
     console.log("todoId", todoId);
 
     try {
-      const {data} = await axios.delete(`${BASE_URL}/api/v1/todo/${todoId}`);
+      const { data } = await axios.delete(`${BASE_URL}/api/v1/todo/${todoId}`);
 
       console.log('data', data);
+      toast.success(data?.message);
 
       todoGet();
     } catch (error) {
@@ -62,7 +76,6 @@ function App() {
     }
 
   }
-
 
   // Animation Functionality
   const containerVariants = {
@@ -109,10 +122,9 @@ function App() {
               Add Task
             </button>
           </form>
-
           <motion.ul className="space-y-3">
 
-            {todos?.map((todo) => (
+            {todos?.map((todo, i) => (
 
               <motion.li
                 key={todo.id}
@@ -121,9 +133,16 @@ function App() {
                 initial="hidden"
                 animate="visible"
               >
-                <span className="cursor-pointer">{todo.todoContent}</span>
+                {!todo.isEditing ? <span className="cursor-pointer">{todo.todoContent}</span>
+                  : <input type='text' value={todo.text} />}
                 <div className="flex gap-2">
-                  <button className="text-yellow-500 hover:text-yellow-400">
+                  <button
+                    onClick={
+                      () => {
+                        todos[i].isEditing = true
+                        setTodos([...todos]);
+                      }}
+                    className="text-yellow-500 hover:text-yellow-400">
                     <FaPen className="h-5 w-5" />
                   </button>
                   <button
