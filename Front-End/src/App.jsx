@@ -60,6 +60,29 @@ function App() {
 
     }
   }
+  // Todo Edit Work
+  const todoEdit = async (event, todoId) => {
+
+    try {
+      event.preventDefault();
+
+      const todoValue = event.target.children[0].value;
+
+      await axios.patch(`${BASE_URL}/api/v1/todo/${todoId}`,
+        {
+          "todoContent": todoValue,
+        }
+      );
+      todoGet();
+
+      event.target.reset();
+
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+
   // Todo Delete Work 
   const todoDelete = async (todoId) => {
     console.log("todoId", todoId);
@@ -124,7 +147,7 @@ function App() {
           </form>
           <motion.ul className="space-y-3">
 
-            {todos?.map((todo, i) => (
+            {todos?.map((todo, index) => (
 
               <motion.li
                 key={todo.id}
@@ -134,22 +157,59 @@ function App() {
                 animate="visible"
               >
                 {!todo.isEditing ? <span className="cursor-pointer">{todo.todoContent}</span>
-                  : <input type='text' value={todo.text} />}
+                  :
+                  <form
+                    onSubmit={(e) => todoEdit(e, todo.id)}
+                  >
+                    <input
+                      type='text'
+                      defaultValue={todo.todoContent}
+                    />
+                  </form>
+                }
                 <div className="flex gap-2">
-                  <button
-                    onClick={
-                      () => {
-                        todos[i].isEditing = true
-                        setTodos([...todos]);
-                      }}
-                    className="text-yellow-500 hover:text-yellow-400">
-                    <FaPen className="h-5 w-5" />
-                  </button>
-                  <button
-                    onClick={() => todoDelete(todo.id)}
-                    className="text-red-500 hover:text-red-400">
-                    <FaTrashAlt className="h-5 w-5" />
-                  </button>
+                  {
+                    !todo.isEditing ?
+                      <button
+                        onClick={
+                          () => {
+
+                            const newTodos = todos.map((todo, i) => {
+                              if (i === index) {
+                                todo.isEditing = true;
+                              } else {
+                                todo.isEditing = false;
+                              };
+                              return todo;
+                            });
+                            setTodos([...newTodos]);
+                          }}
+                        className="text-yellow-500 hover:text-yellow-400">
+                        <FaPen className="h-5 w-5" />
+                      </button>
+                      : <button
+                        onClick={() => {
+                          const newTodos = todos.map((todo, i) => {
+                            todo.isEditing = false;
+                            return todo;
+                          });
+                          setTodos([...newTodos]);
+                        }}
+                        className='text-orange-500 hover:text-orange-400
+                      text-xs'>
+                        Cancel
+                      </button>
+                  }
+                  {!todo.isEditing ?
+                    <button
+                      onClick={() => todoDelete(todo.id)}
+                      className="text-red-500 hover:text-red-400">
+                      <FaTrashAlt className="h-5 w-5" />
+                    </button>
+                    : <button className='text-gray-500 hover:text-gray-400 text-xs'>
+                      Save
+                    </button>
+                  }
                 </div>
               </motion.li>
             ))}
@@ -157,7 +217,7 @@ function App() {
         </motion.div>
       </motion.div>
       <Footer />
-    </div>
+    </div >
   );
 }
 
