@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "AI Chat-bot",
+  "name": "Todo App",
   "builds": [{ "src": "index.mjs", "use": "@vercel/node" }],
   "routes": [{ "src": "/(.*)", "dest": "/index.mjs" }]
 }
