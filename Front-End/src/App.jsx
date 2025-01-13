@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FaTrashAlt, FaPen } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import Navbar from './components/Navbar';
@@ -8,6 +9,10 @@ import Footer from './components/Footer';
 import './App.css';
 
 function App() {
+  // Theme Functionality
+  const theme = useSelector((state) => state.theme.theme);
+
+  // Todo Functionality
   const BASE_URL = "http://localhost:3000";
 
   const [todos, setTodos] = useState([]);
@@ -22,7 +27,6 @@ function App() {
     try {
       const response = await axios.get(`${BASE_URL}/api/v1/todos`);
       const todosData = response?.data?.data;
-
       setTodos(todosData);
     } catch (error) {
       console.log(error);
@@ -120,7 +124,7 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100 text-gray-900 transition-all dark:bg-gray-800 dark:text-white">
+    <div className={`flex flex-col min-h-screen text-gray-900 transition-all ${theme === 'dark' ? 'bg-[#0a1a2e] text-white' : 'bg-gray-100 text-gray-900'}`}>
       <Navbar />
       <motion.div
         className="p-3 flex-grow flex justify-center items-center"
@@ -129,7 +133,7 @@ function App() {
         animate="visible"
       >
         <motion.div
-          className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full space-y-4 mb-32"
+          className={`p-6 rounded-lg shadow-lg max-w-md w-full space-y-4 mb-32 ${theme === 'dark' ? 'bg-[#1a2634] text-white' : 'bg-white text-gray-900'}`}
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -149,7 +153,7 @@ function App() {
             {todos.map(todo => (
               <motion.li
                 key={todo.id}
-                className="flex justify-between items-center p-2 rounded-md bg-gray-200 hover:bg-gray-300 transition-all"
+                className={`flex justify-between items-center p-2 rounded-md ${theme === 'dark' ? 'bg-[#2c3e50]' : 'bg-gray-200'} hover:bg-gray-300 transition-all`}
                 variants={itemVariants}
                 initial="hidden"
                 animate="visible"
@@ -187,7 +191,7 @@ function App() {
                     }}
                     className={!todo.isEditing ? "text-red-500 hover:text-red-400" : "text-gray-500 hover:text-gray-400 text-xs"}
                   >
-                  <FaTrashAlt className="h-5 w-5" />
+                    <FaTrashAlt className="h-5 w-5" />
                   </button>
                 </div>
               </motion.li>
